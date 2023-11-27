@@ -17,7 +17,7 @@ import jakarta.persistence.Persistence;
 public class VersioningTest {
 
 	static EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("Chapter11");
+            Persistence.createEntityManagerFactory("Ch11");
 	
 	@Test
     void firstCommitWins() throws ExecutionException, InterruptedException {
