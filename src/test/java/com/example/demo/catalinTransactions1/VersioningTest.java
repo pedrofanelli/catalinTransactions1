@@ -19,6 +19,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.RollbackException;
 
 
 
@@ -202,10 +203,15 @@ public class VersioningTest {
                earlier. If any <code>ITEM</code> row has a different version, or the row doesn't
                exist anymore, an <code>OptimisticLockException</code> will be thrown.
              */
-        em.getTransaction().commit();
+        
+        assertThrows(RollbackException.class, () -> em.getTransaction().commit());
+        
+        //assertThrows(OptimisticLockException.class, () -> em.flush());
+
+        
         em.close();
 
-        assertEquals("108.00", totalPrice.toString());
+        assertEquals("119.00", totalPrice.toString());
     }
 	
 }
