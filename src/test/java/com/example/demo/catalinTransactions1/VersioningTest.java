@@ -3,15 +3,19 @@ package com.example.demo.catalinTransactions1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
 
+import com.example.demo.catalinTransactions1.models.Category;
 import com.example.demo.catalinTransactions1.models.Item;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.Persistence;
 
@@ -108,6 +112,47 @@ public class VersioningTest {
         assertThrows(OptimisticLockException.class, () -> em1.flush());
         // update ITEM set NAME = ?, VERSION = 1 where ID = ? and VERSION = 0
 
+    }
+	
+	ConcurrencyTestData storeCategoriesAndItems() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        ConcurrencyTestData testData = new ConcurrencyTestData();
+        testData.categories = new TestData(new Long[3]);
+        testData.items = new TestData(new Long[5]);
+        for (int i = 1; i <= testData.categories.identifiers.length; i++) {
+            Category category = new Category();
+            category.setName("Category: " + i);
+            em.persist(category);
+            testData.categories.identifiers[i - 1] = category.getId();
+            for (int j = 1; j <= testData.categories.identifiers.length; j++) {
+                Item item = new Item("Item " + j);
+                item.setCategory(category);
+                item.setBuyNowPrice(new BigDecimal(10 + j));
+                em.persist(item);
+                testData.items.identifiers[(i - 1) + (j - 1)] = item.getId();
+            }
+        }
+        em.getTransaction().commit();
+        em.close();
+        return testData;
+    }
+	
+	private TestData storeItemAndBids() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Long[] ids = new Long[1];
+        Item item = new Item("Some Item");
+        em.persist(item);
+        ids[0] = item.getId();
+        for (int i = 1; i <= 3; i++) {
+            Bid bid = new Bid(new BigDecimal(10 + i), item);
+            em.persist(bid);
+        }
+        em.getTransaction().commit();
+        em.close();
+        return new TestData(ids);
     }
 	
 	@Test
