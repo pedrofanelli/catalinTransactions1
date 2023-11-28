@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
 
+import com.example.demo.catalinTransactions1.models.Bid;
 import com.example.demo.catalinTransactions1.models.Category;
 import com.example.demo.catalinTransactions1.models.Item;
 
@@ -139,22 +140,6 @@ public class VersioningTest {
         return testData;
     }
 	
-	private TestData storeItemAndBids() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        Long[] ids = new Long[1];
-        Item item = new Item("Some Item");
-        em.persist(item);
-        ids[0] = item.getId();
-        for (int i = 1; i <= 3; i++) {
-            Bid bid = new Bid(new BigDecimal(10 + i), item);
-            em.persist(bid);
-        }
-        em.getTransaction().commit();
-        em.close();
-        return new TestData(ids);
-    }
-	
 	@Test
     void manualVersionChecking() throws ExecutionException, InterruptedException {
         final ConcurrencyTestData testData = storeCategoriesAndItems();
@@ -209,5 +194,18 @@ public class VersioningTest {
                 }).get();
             }
         }
+
+            /*
+               For each <code>Item</code> loaded earlier with the locking query, Hibernate will
+               now execute a <code>SELECT</code> during flushing. It checks if the database
+               version of each <code>ITEM</code> row is still the same as when it was loaded
+               earlier. If any <code>ITEM</code> row has a different version, or the row doesn't
+               exist anymore, an <code>OptimisticLockException</code> will be thrown.
+             */
+        em.getTransaction().commit();
+        em.close();
+
+        assertEquals("108.00", totalPrice.toString());
+    }
 	
 }
