@@ -6,14 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Persistence;
-
 import org.junit.jupiter.api.Test;
 
 import com.example.demo.catalinTransactions1.models.Item;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
 
 
 
@@ -23,6 +23,13 @@ public class VersioningTest {
 	public static EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("holahola");
 	
+	/**
+	 * 
+	 * 
+	 * 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 */
 	@Test
     public void firstCommitWins() throws ExecutionException, InterruptedException {
         EntityManager em = emf.createEntityManager();
