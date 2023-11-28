@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 public class Item {
 
 	@Id
-    @GeneratedValue(generator = "ID_GENERATOR")
+    @GeneratedValue
     private Long id;
 
     @Version

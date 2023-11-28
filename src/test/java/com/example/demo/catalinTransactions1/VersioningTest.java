@@ -32,6 +32,7 @@ public class VersioningTest {
 	 */
 	@Test
     public void firstCommitWins() throws ExecutionException, InterruptedException {
+		System.out.println("buenas buenas");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Item someItem = new Item("Some Item");

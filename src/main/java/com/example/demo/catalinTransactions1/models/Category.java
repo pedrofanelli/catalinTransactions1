@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 public class Category {
 
 	@Id
-    @GeneratedValue(generator = "ID_GENERATOR")
+    @GeneratedValue
     private Long id;
 
     private String name;
