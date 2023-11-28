@@ -159,7 +159,7 @@ public class VersioningTest {
                  */
             List<Item> items =
                     em.createQuery("select i from Item i where i.category.id = :catId", Item.class)
-                            .setLockMode(LockModeType.OPTIMISTIC)
+                    		.setLockMode(LockModeType.OPTIMISTIC)
                             .setParameter("catId", categoryId)
                             .getResultList();
 
@@ -202,15 +202,15 @@ public class VersioningTest {
                version of each <code>ITEM</code> row is still the same as when it was loaded
                earlier. If any <code>ITEM</code> row has a different version, or the row doesn't
                exist anymore, an <code>OptimisticLockException</code> will be thrown.
+               
+               ... NOT exactly that exception :)
              */
         
         assertThrows(RollbackException.class, () -> em.getTransaction().commit());
-        
-        //assertThrows(OptimisticLockException.class, () -> em.flush());
 
-        
         em.close();
 
+        // NOT 108
         assertEquals("119.00", totalPrice.toString());
     }
 	
