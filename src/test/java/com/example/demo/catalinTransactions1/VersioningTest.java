@@ -1,26 +1,30 @@
 package com.example.demo.catalinTransactions1;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-import org.junit.jupiter.api.Test;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.Persistence;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import com.example.demo.catalinTransactions1.models.Item;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.Persistence;
+
 
 public class VersioningTest {
 
-	static EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("Ch11");
+	
+	public static EntityManagerFactory emf =
+            Persistence.createEntityManagerFactory("holahola");
 	
 	@Test
-    void firstCommitWins() throws ExecutionException, InterruptedException {
+    public void firstCommitWins() throws ExecutionException, InterruptedException {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Item someItem = new Item("Some Item");

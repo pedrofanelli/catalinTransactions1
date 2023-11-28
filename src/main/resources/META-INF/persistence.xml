@@ -4,9 +4,10 @@
                                  http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
              version="2.2">
              
-<persistence-unit name="Ch11" transaction-type="RESOURCE_LOCAL">
+<persistence-unit name="holahola" transaction-type="RESOURCE_LOCAL">
 		<description>Chapter 11 of Catalin about Transactions</description>
         <!-- Specify the provider -->
+        
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         
         <!-- <exclude-unlisted-classes>false</exclude-unlisted-classes> -->
