@@ -103,10 +103,66 @@ public class VersioningTest {
            When the persistence context is flushed Hibernate will detect the dirty
            <code>Item</code> instance and increment its version to 1. The SQL
            <code>UPDATE</code> now performs the version check, storing the new version
-           in the database, but only if the database version is still 0.
+           in the database, but ONLY if the database version is still 0.
         */
         assertThrows(OptimisticLockException.class, () -> em1.flush());
         // update ITEM set NAME = ?, VERSION = 1 where ID = ? and VERSION = 0
 
     }
+	
+	@Test
+    void manualVersionChecking() throws ExecutionException, InterruptedException {
+        final ConcurrencyTestData testData = storeCategoriesAndItems();
+        Long[] CATEGORIES = testData.categories.identifiers;
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (Long categoryId : CATEGORIES) {
+
+                /*
+                   For each <code>Category</code>, query all <code>Item</code> instances with
+                   an <code>OPTIMISTIC</code> lock mode. Hibernate now knows it has to
+                   check each <code>Item</code> at flush time.
+                 */
+            List<Item> items =
+                    em.createQuery("select i from Item i where i.category.id = :catId", Item.class)
+                            .setLockMode(LockModeType.OPTIMISTIC)
+                            .setParameter("catId", categoryId)
+                            .getResultList();
+
+            for (Item item : items)
+                totalPrice = totalPrice.add(item.getBuyNowPrice());
+
+            // Now a concurrent transaction will move an item to another category
+            if (categoryId.equals(testData.categories.getFirstId())) {
+                Executors.newSingleThreadExecutor().submit(() -> {
+                    try {
+                        EntityManager em1 = emf.createEntityManager();
+                        em1.getTransaction().begin();
+
+                        // Moving the first item from the first category into the last category
+                        List<Item> items1 =
+                                em1.createQuery("select i from Item i where i.category.id = :catId", Item.class)
+                                        .setParameter("catId", testData.categories.getFirstId())
+                                        .getResultList();
+
+                        Category lastCategory = em1.getReference(
+                                Category.class, testData.categories.getLastId()
+                        );
+
+                        items1.iterator().next().setCategory(lastCategory);
+
+                        em1.getTransaction().commit();
+                        em1.close();
+                    } catch (Exception ex) {
+                        // This shouldn't happen, this commit should win!
+                        throw new RuntimeException("Concurrent operation failure: " + ex, ex);
+                    }
+                    return null;
+                }).get();
+            }
+        }
+	
 }
