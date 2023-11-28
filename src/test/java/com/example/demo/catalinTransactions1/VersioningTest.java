@@ -24,8 +24,24 @@ public class VersioningTest {
             Persistence.createEntityManagerFactory("holahola");
 	
 	/**
+	 * Optimistic Concurrency Control
+	 * Funcionamiento de un "Optimistic Lock" es decir, como Hibernate puede hacer un versioning automático
+	 * entonces permite tener un control muy similar a un Repeatable Read (RR) Isolation. Pero SIN lockear la 
+	 * base de datos. Por default existe un Read Committed pero con este versioning se asimila al Repeatable Read.
+	 * Por eso se usa bastante. Mantenemos un nivel de isolation Read Committed, con toda la mejor performance que
+	 * eso implica pero además gracias al versioning propio de Hibernate tenemos un nivel de isolation como RR.
 	 * 
 	 * 
+	 * Cada vez que la instancia o la entidad este "DIRTY" al momento de Flushear, se incrementará la versión.
+	 * Es decir, que la entidad original que se obtuvo y la que se guarda sean diferentes. Si el cambio lo hicimos
+	 * nosotros, entonces la versión será la misma que la que tenia al leerla o tomarla. Por ejemplo, supongamos que 
+	 * buscamos una entidad, la obtenemos y tiene version 0. La cambiamos, y al momento de guardarla, se hace un 
+	 * dirty check, porque es diferente a la original en la base. La va a guardar si la versión es la misma que la 
+	 * del comienzo (0 en el caso). Le mete el cambio y aumenta en 1 la versión.
+	 * PERO, si la versión es distinta, ahí se tira @OptimisticLockException y podremos manejarlo.
+	 * Por eso es optimista, porque funciona como si hubiera habido un lock en la base, pero no existio, y nos
+	 * permite controlar esa situación. La forma pesimista sería que se setee un lock en la row, y nadie puede tocarla
+	 * mientras tanto. En nuestro caso alguien puede tocarla, y en cuyo caso podemos controlarlo.
 	 * 
 	 * @throws ExecutionException
 	 * @throws InterruptedException
