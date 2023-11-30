@@ -146,7 +146,14 @@ public class VersioningTest {
 	 * 
 	 * En este caso obligamos que antes de realizarse un flush o commit, se haga un select sobre los
 	 * Item entities. Si prestamos atención, no realizamos ningún cambio sobre ellos, simplemente
-	 * calculamos la suma 
+	 * calculamos la suma de los precios de los items dentro de una categoría específica.
+	 * Concurrentemente se puede cambiar la categoria de cierto item, pero como nosotros no lo 
+	 * cambiamos, no ejecutamos ningun UPDATE entonces el optimistic lock automático no nos funcionará.
+	 * 
+	 * Entonces, obtendríamos una suma incorrecta. Para asegurarnos que nadie movio nada de lugar o cambio algo,
+	 * obligamos que antes de commit, se chekee la versión.
+	 * 
+	 * PERO, estoy casi seguro que no aumentaría la versión, sino simplemente la controlaría, un SELECT
 	 * 
 	 * @throws ExecutionException
 	 * @throws InterruptedException
