@@ -142,6 +142,15 @@ public class VersioningTest {
         return testData;
     }
 	
+	/**
+	 * 
+	 * En este caso obligamos que antes de realizarse un flush o commit, se haga un select sobre los
+	 * Item entities. Si prestamos atención, no realizamos ningún cambio sobre ellos, simplemente
+	 * calculamos la suma 
+	 * 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 */
 	@Test
     void manualVersionChecking() throws ExecutionException, InterruptedException {
         final ConcurrencyTestData testData = storeCategoriesAndItems();
