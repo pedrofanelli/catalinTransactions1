@@ -153,7 +153,9 @@ public class VersioningTest {
 	 * Entonces, obtendríamos una suma incorrecta. Para asegurarnos que nadie movio nada de lugar o cambio algo,
 	 * obligamos que antes de commit, se chekee la versión.
 	 * 
-	 * PERO, estoy casi seguro que no aumentaría la versión, sino simplemente la controlaría, un SELECT
+	 * PERO, en esta caso no aumentaría la versión, sino simplemente la controlaría, un SELECT
+	 * 
+	 * Eso es lo que se llama OPTIMISTIC LOCK
 	 * 
 	 * @throws ExecutionException
 	 * @throws InterruptedException
@@ -263,6 +265,16 @@ public class VersioningTest {
         }
     }
 	
+    
+    /**
+     * 
+     * Caso similar al anterior. OPTIMISTIC FORCE INCREMENT. Optimistic lock + update de versión
+     * 
+     * 
+     * 
+     * 
+     * @throws Throwable
+     */
 	@Test
     void forceIncrement() throws Throwable {
         TestData testData = storeItemAndBids();
