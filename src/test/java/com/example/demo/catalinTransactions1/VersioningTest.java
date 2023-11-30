@@ -270,7 +270,16 @@ public class VersioningTest {
      * 
      * Caso similar al anterior. OPTIMISTIC FORCE INCREMENT. Optimistic lock + update de versión
      * 
+     * En este caso directamente no se toca la entity Item. Se modifica Bids, que tendría una FK que seria 
+     * el id de un Item, pero el propio Item no tiene nada que lo afecte el hecho de que se genere un nuevo Bid
+     * para si mismo. Entonces, al igual que el ejemplo "manual" anterior, el propio entity no se ve modificado.
      * 
+     * Pero, al igual que antes, puede suceder que concurrentemente se realice un nuevo bid más alto. Entonces, yo que
+     * buscaba el más alto, no sería el correcto. 
+     * 
+     * Al forzar un optimistic lock, porque no tocamos Item y de forma automatica no se realiza un chekeo, podemos
+     * corroborar que hubo concurrentemente un nuevo bid. Pero a diferencia del anterior caso, no solo se controla
+     * sino que se busca INCREMENTAR la versión. Como si fuera propiamente un UPDATE.
      * 
      * 
      * @throws Throwable
