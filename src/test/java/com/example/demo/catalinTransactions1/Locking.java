@@ -1,7 +1,12 @@
 package com.example.demo.catalinTransactions1;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 import org.hibernate.Session;
@@ -15,9 +20,6 @@ import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PessimisticLockException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Locking extends VersioningTest {
 
@@ -144,5 +146,32 @@ public class Locking extends VersioningTest {
         em.close();
 
         assertEquals(0, totalPrice.compareTo(new BigDecimal("108")));
+    }
+	
+	
+	@Test
+    public void findLock() {
+        final ConcurrencyTestData testData = storeCategoriesAndItems();
+        Long CATEGORY_ID = testData.categories.getFirstId();
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Map<String, Object> hints = new HashMap<>();
+        hints.put("jakarta.persistence.lock.timeout", 5000);
+
+        // Executes a SELECT .. FOR UPDATE WAIT 5000 if supported by dialect
+        Category category =
+                em.find(
+                        Category.class,
+                        CATEGORY_ID,
+                        LockModeType.PESSIMISTIC_WRITE,
+                        hints
+                );
+
+        category.setName("New Name");
+
+        em.getTransaction().commit();
+        em.close();
     }
 }
