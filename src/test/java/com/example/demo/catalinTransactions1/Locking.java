@@ -19,7 +19,7 @@ import jakarta.persistence.PessimisticLockException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Locking {
+public class Locking extends VersioningTest {
 
 	@Test
     public void pessimisticReadWrite() throws Exception {
