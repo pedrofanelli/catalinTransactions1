@@ -42,7 +42,7 @@ public class Locking extends VersioningTest {
             List<Item> items =
                     em.createQuery("select i from Item i where i.category.id = :catId", Item.class)
                             .setLockMode(LockModeType.PESSIMISTIC_READ)
-                            .setHint("javax.persistence.lock.timeout", 5000)
+                            .setHint("jakarta.persistence.lock.timeout", 5000)
                             .setParameter("catId", categoryId)
                             .getResultList();
 
@@ -101,7 +101,7 @@ public class Locking extends VersioningTest {
                                 em1.createQuery("select i from Item i where i.category.id = :catId", Item.class)
                                         .setParameter("catId", testData.categories.getFirstId())
                                         .setLockMode(LockModeType.PESSIMISTIC_WRITE) // Prevent concurrent access
-                                        .setHint("javax.persistence.lock.timeout", 5000) // Only works on Oracle...
+                                        .setHint("jakarta.persistence.lock.timeout", 5000) // Only works on Oracle...
                                         .getResultList();
 
                         Category lastCategory = em1.getReference(
